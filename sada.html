@@ -3,138 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>صدى | النسخة الكاملة</title>
+    <title>صدى | المنصة الشاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6c5ce7;
-            --secondary: #a29bfe;
             --accent: #00cec9;
-            --bg: #f4f7f6;
-            --card: #ffffff;
+            --bg: #f0f2f5;
             --text: #2d3436;
-            --light-text: #636e72;
-            --danger: #d63031;
+            --danger: #ff7675;
         }
 
         * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
+        body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 80px; }
 
-        /* Auth Screen */
+        /* Auth */
         #auth-screen { position: fixed; inset: 0; z-index: 9999; background: var(--primary); display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-container { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 25px; text-align: center; }
+        .auth-card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 25px; text-align: center; }
         .inp { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #eee; border-radius: 12px; outline: none; }
         .btn-main { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
 
-        /* Header */
-        header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .logo { font-size: 24px; font-weight: 900; color: var(--primary); }
-
         /* Navigation */
         nav { position: fixed; bottom: 0; width: 100%; background: white; height: 70px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; cursor: pointer; font-size: 11px; font-weight: bold; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; cursor: pointer; font-size: 11px; font-weight: bold; text-decoration: none; }
         .nav-item.active { color: var(--primary); }
 
         /* Views */
         .view { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
         .view.active { display: block; }
 
-        /* Profile & Avatars */
-        .avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; background: #eee; flex-shrink: 0; }
-        .p-avatar-large { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary); }
+        /* Stories */
+        .stories-row { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .story-item { flex: 0 0 70px; text-align: center; cursor: pointer; }
+        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 3px solid var(--primary); padding: 2px; }
+        .story-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .story-add { border: 2px dashed #ccc; font-size: 24px; display: flex; align-items: center; justify-content: center; color: #999; }
 
-        /* Posts */
-        .post { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .post-img { width: 100%; border-radius: 15px; margin-top: 10px; }
-
-        /* Search & Lists */
-        .search-bar { width: 100%; padding: 12px; border-radius: 12px; border: none; background: #eee; margin-bottom: 15px; outline: none; }
-        .list-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: white; border-radius: 15px; margin-bottom: 8px; cursor: pointer; }
+        /* Posts & UI Elements */
+        .card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #eee; object-fit: cover; }
+        .media-box { width: 100%; border-radius: 15px; margin-top: 10px; }
 
         /* Chat Window */
         #chat-window { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; }
-        #chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 75%; padding: 10px 15px; border-radius: 15px; font-size: 14px; }
-        .bubble.me { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .bubble.them { align-self: flex-start; background: white; border-bottom-left-radius: 2px; border: 1px solid #ddd; }
+        #chat-msgs { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .msg-bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 14px; position: relative; }
+        .msg-bubble.me { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .msg-bubble.them { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
 
-        /* Privacy Badge */
-        .badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-right: 5px; color: white; }
-        .badge-public { background: #2ecc71; }
-        .badge-private { background: #e67e22; }
+        /* Search List */
+        .search-list { max-height: 300px; overflow-y: auto; background: white; border-radius: 15px; margin-bottom: 15px; }
+        .user-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Auth Screen -->
+    <!-- Auth -->
     <div id="auth-screen">
-        <div class="auth-container">
-            <h1 class="logo" style="font-size: 40px; margin-bottom: 20px;">صدى</h1>
-            <div id="reg-fields">
+        <div class="auth-card">
+            <h1 style="color:var(--primary); margin:0;">صدى</h1>
+            <p style="color:#777; margin-bottom:20px;">تواصل بخصوصية تامة</p>
+            <div id="reg-box">
                 <input type="text" id="join-name" class="inp" placeholder="الاسم الكامل">
-                <input type="text" id="join-user" class="inp" placeholder="اسم المستخدم (English)">
+                <input type="text" id="join-user" class="inp" placeholder="اسم المستخدم (إنجليزي)">
             </div>
             <input type="email" id="join-email" class="inp" placeholder="البريد الإلكتروني">
             <input type="password" id="join-pass" class="inp" placeholder="كلمة المرور">
             <button class="btn-main" onclick="handleAuth()">استمرار</button>
-            <p onclick="toggleAuth()" id="auth-switch" style="cursor:pointer; color:var(--primary); font-size:14px; margin-top:15px;">لديك حساب؟ سجل دخولك</p>
+            <p onclick="toggleAuth()" style="cursor:pointer; color:var(--primary); font-size:14px; margin-top:15px;">لديك حساب؟ سجل دخولك</p>
         </div>
     </div>
 
-    <!-- App Header -->
-    <header id="app-header" class="hidden">
-        <div class="logo">صدى</div>
+    <!-- App UI -->
+    <header style="background:white; padding:15px; position:sticky; top:0; z-index:1000; display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:24px; font-weight:900; color:var(--primary);">صدى</div>
         <div onclick="navTo('chat')" style="cursor:pointer; font-size:20px;">✉️</div>
     </header>
 
-    <main id="app-main" class="hidden">
+    <main>
         <!-- Home View -->
         <div id="home-view" class="view active">
+            <div class="stories-row" id="stories-cont">
+                <div class="story-item" onclick="document.getElementById('story-file').click()">
+                    <div class="story-circle story-add">+</div>
+                    <span style="font-size:10px;">أضف قصة</span>
+                    <input type="file" id="story-file" hidden accept="image/*" onchange="uploadMedia(this, 'stories')">
+                </div>
+            </div>
             <div id="feed"></div>
         </div>
 
         <!-- Post View -->
         <div id="post-view" class="view">
-            <div class="post">
+            <div class="card">
                 <h3>نشر جديد</h3>
-                <textarea id="post-text" class="inp" style="height:100px; resize:none;" placeholder="ماذا يدور في ذهنك؟"></textarea>
+                <textarea id="post-text" class="inp" style="height:120px; resize:none;" placeholder="ماذا يدور في ذهنك؟"></textarea>
                 <input type="file" id="post-file" class="inp" accept="image/*">
-                <button class="btn-main" onclick="submitPost()">نشر الآن</button>
+                <button class="btn-main" onclick="submitPost()">نشر في صدى</button>
             </div>
         </div>
 
-        <!-- Messages View -->
+        <!-- Chat/Search View -->
         <div id="chat-view" class="view">
-            <input type="text" class="search-bar" placeholder="ابحث عن أصدقاء..." oninput="searchUsers(this.value)">
-            <div id="search-results" style="margin-bottom:20px;"></div>
-            <h4 id="threads-title">المحادثات الأخيرة</h4>
+            <input type="text" class="inp" placeholder="🔍 ابحث عن مستخدم بالاسم..." oninput="searchUsers(this.value)">
+            <div id="search-results" class="search-list hidden"></div>
+            
+            <h4 style="margin:20px 0 10px;">المحادثات</h4>
             <div id="threads"></div>
         </div>
 
         <!-- Profile View -->
-        <div id="profile-view" class="view">
-            <div class="post" style="text-align: center;">
-                <div style="position:relative; display:inline-block;">
-                    <img id="my-pfp" class="p-avatar-large" src="">
-                    <label style="position:absolute; bottom:5px; right:5px; background:var(--primary); color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-                        📷<input type="file" hidden onchange="updateProfilePic(this)">
-                    </label>
+        <div id="profile-view" class="view" style="text-align:center;">
+            <div class="card">
+                <img id="my-pfp" class="avatar" style="width:100px; height:100px; margin-bottom:15px;">
+                <h2 id="my-name">...</h2>
+                <p id="my-user" style="color:var(--accent);">@...</p>
+                <div style="margin:20px 0; border-top:1px solid #eee; padding-top:20px;">
+                    <button class="btn-main" style="background:#eee; color:#333; margin-bottom:10px;" onclick="document.getElementById('pfp-file').click()">تغيير الصورة الشخصية</button>
+                    <input type="file" id="pfp-file" hidden accept="image/*" onchange="updateProfilePic(this)">
+                    <button class="btn-main" style="background:var(--danger);" onclick="logout()">خروج</button>
                 </div>
-                <h2 id="my-name-display" style="margin:10px 0 0 0;">...</h2>
-                <p id="my-user-display" style="color:var(--light-text); margin:5px 0;">@...</p>
-                
-                <div style="margin:20px 0; background:#f9f9f9; padding:15px; border-radius:15px;">
-                    <p style="font-weight:bold; margin-bottom:10px;">إعدادات الخصوصية</p>
-                    <div style="display:flex; justify-content:center; gap:10px;">
-                        <button id="btn-public" class="btn-main" style="width:auto; padding:8px 20px; font-size:13px;" onclick="setPrivacy(true)">عام</button>
-                        <button id="btn-private" class="btn-main" style="width:auto; padding:8px 20px; font-size:13px; background:#ddd; color:#555;" onclick="setPrivacy(false)">خاص</button>
-                    </div>
-                </div>
-
-                <button class="btn-main" style="background:var(--danger);" onclick="logout()">تسجيل الخروج</button>
             </div>
         </div>
     </main>
@@ -143,18 +133,19 @@
     <div id="chat-window">
         <div style="background:white; padding:15px; border-bottom:1px solid #eee; display:flex; align-items:center; gap:15px;">
             <button onclick="closeChat()" style="border:none; background:none; font-size:22px;">✕</button>
-            <img id="chat-target-img" class="avatar" style="width:35px; height:35px;">
-            <b id="chat-target-name">...</b>
+            <b id="chat-title">المحادثة</b>
         </div>
-        <div id="chat-messages"></div>
+        <div id="chat-msgs"></div>
         <div style="background:white; padding:15px; display:flex; gap:10px;">
-            <input type="text" id="chat-input" class="inp" style="margin:0;" placeholder="اكتب هنا...">
+            <button onclick="document.getElementById('chat-img').click()" style="border:none; background:#eee; padding:10px; border-radius:12px;">📷</button>
+            <input type="file" id="chat-img" hidden accept="image/*" onchange="uploadChatImg(this)">
+            <input type="text" id="chat-input" class="inp" style="margin:0;" placeholder="رسالتك...">
             <button onclick="sendMsg()" style="background:var(--primary); color:white; border:none; width:60px; border-radius:12px;">➤</button>
         </div>
     </div>
 
-    <!-- Bottom Nav -->
-    <nav id="app-nav" class="hidden">
+    <!-- Nav -->
+    <nav>
         <div class="nav-item active" onclick="navTo('home', this)"><i>🏠</i>الرئيسية</div>
         <div class="nav-item" onclick="navTo('post', this)"><i>➕</i>نشر</div>
         <div class="nav-item" onclick="navTo('chat', this)"><i>💬</i>الرسائل</div>
@@ -181,10 +172,10 @@
 
         let me = null;
         let isLogin = false;
-        let activeChat = null;
+        let activeChatId = null;
 
-        // --- Image Utilities ---
-        const toBase64 = (file) => new Promise(resolve => {
+        // --- Utils ---
+        const toB64 = (file) => new Promise(res => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = e => {
@@ -198,7 +189,7 @@
                     else { if(h > MAX) { w *= MAX/h; h = MAX; } }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                    resolve(canvas.toBase64 = canvas.toDataURL('image/jpeg', 0.6));
+                    res(canvas.toDataURL('image/jpeg', 0.6));
                 }
             }
         });
@@ -206,8 +197,7 @@
         // --- Auth ---
         window.toggleAuth = () => {
             isLogin = !isLogin;
-            document.getElementById('reg-fields').classList.toggle('hidden', isLogin);
-            document.getElementById('auth-switch').innerText = isLogin ? "ليس لديك حساب؟ اشترك" : "لديك حساب؟ سجل دخولك";
+            document.getElementById('reg-box').classList.toggle('hidden', isLogin);
         };
 
         window.handleAuth = async () => {
@@ -220,59 +210,158 @@
                     const name = document.getElementById('join-name').value;
                     const user = document.getElementById('join-user').value.toLowerCase();
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "users", res.user.uid), {
-                        name, username: user, uid: res.user.uid, 
-                        pfp: "", isPublic: true
-                    });
+                    await setDoc(doc(db, "users", res.user.uid), { name, username: user, uid: res.user.uid, pfp: "" });
                 }
             } catch(e) { alert(e.message); }
         };
 
-        onAuthStateChanged(auth, async user => {
-            if(user) {
-                const snap = await getDoc(doc(db, "users", user.uid));
+        onAuthStateChanged(auth, async u => {
+            if(u) {
+                const snap = await getDoc(doc(db, "users", u.uid));
                 me = snap.data();
                 document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('app-header').classList.remove('hidden');
-                document.getElementById('app-main').classList.remove('hidden');
-                document.getElementById('app-nav').classList.remove('hidden');
-                updateProfileUI();
-                initFeed();
+                document.getElementById('my-name').innerText = me.name;
+                document.getElementById('my-user').innerText = "@" + me.username;
+                document.getElementById('my-pfp').src = me.pfp || "https://ui-avatars.com/api/?name="+me.name;
+                initApp();
             } else {
                 document.getElementById('auth-screen').classList.remove('hidden');
             }
         });
 
-        const updateProfileUI = () => {
-            document.getElementById('my-name-display').innerText = me.name;
-            document.getElementById('my-user-display').innerText = "@" + me.username;
-            document.getElementById('my-pfp').src = me.pfp || "https://ui-avatars.com/api/?name=" + me.name;
-            
-            const isPub = me.isPublic !== false;
-            document.getElementById('btn-public').style.background = isPub ? "var(--primary)" : "#ddd";
-            document.getElementById('btn-public').style.color = isPub ? "white" : "#555";
-            document.getElementById('btn-private').style.background = !isPub ? "var(--primary)" : "#ddd";
-            document.getElementById('btn-private').style.color = !isPub ? "white" : "#555";
+        // --- Core ---
+        function initApp() {
+            // Feed
+            onSnapshot(collection(db, "posts"), snap => {
+                const feed = document.getElementById('feed');
+                feed.innerHTML = "";
+                let ps = [];
+                snap.forEach(d => ps.push(d.data()));
+                ps.sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+                ps.forEach(p => {
+                    feed.innerHTML += `
+                        <div class="card">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <img src="${p.pfp || "https://ui-avatars.com/api/?name="+p.author}" class="avatar">
+                                <b>${p.author}</b>
+                            </div>
+                            <div>${p.text}</div>
+                            ${p.media ? `<img src="${p.media}" class="media-box">` : ''}
+                        </div>
+                    `;
+                });
+            });
+
+            // Stories
+            onSnapshot(collection(db, "stories"), snap => {
+                const cont = document.getElementById('stories-cont');
+                const addBtn = cont.children[0].outerHTML;
+                cont.innerHTML = addBtn;
+                snap.forEach(d => {
+                    const s = d.data();
+                    cont.innerHTML += `
+                        <div class="story-item">
+                            <div class="story-circle"><img src="${s.media}"></div>
+                            <span style="font-size:10px;">${s.author}</span>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        window.submitPost = async () => {
+            const txt = document.getElementById('post-text').value;
+            const file = document.getElementById('post-file').files[0];
+            let media = file ? await toB64(file) : "";
+            await addDoc(collection(db, "posts"), {
+                text: txt, media, author: me.name, pfp: me.pfp, uid: me.uid, at: serverTimestamp()
+            });
+            document.getElementById('post-text').value = "";
+            navTo('home', document.querySelectorAll('.nav-item')[0]);
         };
 
-        window.logout = () => signOut(auth).then(() => location.reload());
+        window.uploadMedia = async (input, type) => {
+            if(!input.files[0]) return;
+            const b64 = await toB64(input.files[0]);
+            await addDoc(collection(db, type), {
+                media: b64, author: me.name, uid: me.uid, at: serverTimestamp()
+            });
+            alert("تم الرفع بنجاح!");
+        };
 
-        // --- Profile Actions ---
         window.updateProfilePic = async (input) => {
             if(!input.files[0]) return;
-            const b64 = await toBase64(input.files[0]);
+            const b64 = await toB64(input.files[0]);
             await updateDoc(doc(db, "users", me.uid), { pfp: b64 });
             me.pfp = b64;
-            updateProfileUI();
+            document.getElementById('my-pfp').src = b64;
         };
 
-        window.setPrivacy = async (val) => {
-            await updateDoc(doc(db, "users", me.uid), { isPublic: val });
-            me.isPublic = val;
-            updateProfileUI();
+        // --- Search & Messaging ---
+        window.searchUsers = async (val) => {
+            const resDiv = document.getElementById('search-results');
+            if(val.length < 2) { resDiv.classList.add('hidden'); return; }
+            const q = query(collection(db, "users"));
+            const snap = await getDocs(q);
+            resDiv.innerHTML = "";
+            resDiv.classList.remove('hidden');
+            snap.forEach(d => {
+                const u = d.data();
+                if(u.uid !== me.uid && u.name.toLowerCase().includes(val.toLowerCase())) {
+                    resDiv.innerHTML += `
+                        <div class="user-item" onclick="openChat('${u.uid}', '${u.name}')">
+                            <img src="${u.pfp || "https://ui-avatars.com/api/?name="+u.name}" class="avatar">
+                            <div><b>${u.name}</b><br><small>@${u.username}</small></div>
+                        </div>
+                    `;
+                }
+            });
         };
 
-        // --- Navigation ---
+        window.openChat = (uid, name) => {
+            activeChatId = uid;
+            document.getElementById('chat-title').innerText = name;
+            document.getElementById('chat-window').style.display = 'flex';
+            const cid = [me.uid, uid].sort().join("_");
+            onSnapshot(query(collection(db, "messages"), where("cid", "==", cid)), snap => {
+                const box = document.getElementById('chat-msgs');
+                box.innerHTML = "";
+                let msgs = [];
+                snap.forEach(d => msgs.push(d.data()));
+                msgs.sort((a,b) => (a.at?.seconds || 0) - (b.at?.seconds || 0));
+                msgs.forEach(m => {
+                    box.innerHTML += `
+                        <div class="msg-bubble ${m.from === me.uid ? 'me' : 'them'}">
+                            ${m.text ? `<div>${m.text}</div>` : ''}
+                            ${m.media ? `<img src="${m.media}" class="media-box">` : ''}
+                        </div>
+                    `;
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        };
+
+        window.sendMsg = async () => {
+            const inp = document.getElementById('chat-input');
+            if(!inp.value) return;
+            const cid = [me.uid, activeChatId].sort().join("_");
+            await addDoc(collection(db, "messages"), {
+                cid, text: inp.value, from: me.uid, at: serverTimestamp()
+            });
+            inp.value = "";
+        };
+
+        window.uploadChatImg = async (input) => {
+            if(!input.files[0]) return;
+            const b64 = await toB64(input.files[0]);
+            const cid = [me.uid, activeChatId].sort().join("_");
+            await addDoc(collection(db, "messages"), {
+                cid, media: b64, from: me.uid, at: serverTimestamp()
+            });
+        };
+
+        window.closeChat = () => document.getElementById('chat-window').style.display = 'none';
+
         window.navTo = (id, el) => {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.getElementById(id + '-view').classList.add('active');
@@ -283,101 +372,6 @@
             if(id === 'chat') renderThreads();
         };
 
-        // --- Home Feed ---
-        function initFeed() {
-            onSnapshot(collection(db, "posts"), snap => {
-                const list = document.getElementById('feed');
-                list.innerHTML = "";
-                let arr = [];
-                snap.forEach(d => arr.push(d.data()));
-                arr.sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
-                
-                arr.forEach(p => {
-                    list.innerHTML += `
-                        <div class="post">
-                            <div class="post-header">
-                                <img src="${p.pfp || "https://ui-avatars.com/api/?name="+p.author}" class="avatar">
-                                <div><b>${p.author}</b><br><small style="color:var(--light-text)">@${p.username}</small></div>
-                            </div>
-                            <div>${p.text}</div>
-                            ${p.media ? `<img src="${p.media}" class="post-img">` : ''}
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        window.submitPost = async () => {
-            const txt = document.getElementById('post-text').value;
-            const file = document.getElementById('post-file').files[0];
-            let media = "";
-            if(file) media = await toBase64(file);
-            if(!txt && !media) return;
-            
-            await addDoc(collection(db, "posts"), {
-                text: txt, media, author: me.name, username: me.username, pfp: me.pfp, uid: me.uid, at: serverTimestamp()
-            });
-            document.getElementById('post-text').value = "";
-            document.getElementById('post-file').value = "";
-            navTo('home', document.querySelectorAll('.nav-item')[0]);
-        };
-
-        // --- Search & Messaging ---
-        window.searchUsers = async (val) => {
-            const resDiv = document.getElementById('search-results');
-            if(val.length < 2) { resDiv.innerHTML = ""; return; }
-            
-            const q = query(collection(db, "users"));
-            const snap = await getDocs(q);
-            resDiv.innerHTML = "";
-            snap.forEach(d => {
-                const u = d.data();
-                if(u.uid !== me.uid && (u.name.toLowerCase().includes(val.toLowerCase()) || u.username.includes(val))) {
-                    resDiv.innerHTML += `
-                        <div class="list-item" onclick="openChat('${u.uid}', '${u.name}', '${u.pfp}')">
-                            <img src="${u.pfp || "https://ui-avatars.com/api/?name="+u.name}" class="avatar">
-                            <div>
-                                <b>${u.name}</b> <span class="badge ${u.isPublic ? 'badge-public' : 'badge-private'}">${u.isPublic ? 'عام' : 'خاص'}</span>
-                                <br><small>@${u.username}</small>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-        };
-
-        window.openChat = (uid, name, pfp) => {
-            activeChat = { uid, name, pfp };
-            document.getElementById('chat-target-name').innerText = name;
-            document.getElementById('chat-target-img').src = pfp || "https://ui-avatars.com/api/?name="+name;
-            document.getElementById('chat-window').style.display = 'flex';
-            
-            const convoId = [me.uid, uid].sort().join("_");
-            onSnapshot(query(collection(db, "messages"), where("convoId", "==", convoId)), snap => {
-                const box = document.getElementById('chat-messages');
-                box.innerHTML = "";
-                let msgs = [];
-                snap.forEach(d => msgs.push(d.data()));
-                msgs.sort((a,b) => (a.at?.seconds || 0) - (b.at?.seconds || 0));
-                msgs.forEach(m => {
-                    box.innerHTML += `<div class="bubble ${m.from === me.uid ? 'me' : 'them'}">${m.text}</div>`;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        };
-
-        window.closeChat = () => document.getElementById('chat-window').style.display = 'none';
-
-        window.sendMsg = async () => {
-            const inp = document.getElementById('chat-input');
-            if(!inp.value) return;
-            const convoId = [me.uid, activeChat.uid].sort().join("_");
-            await addDoc(collection(db, "messages"), {
-                convoId, text: inp.value, from: me.uid, to: activeChat.uid, at: serverTimestamp()
-            });
-            inp.value = "";
-        };
-
         async function renderThreads() {
             const list = document.getElementById('threads');
             list.innerHTML = "جاري التحميل...";
@@ -385,22 +379,24 @@
             const uids = new Set();
             snap.forEach(d => {
                 const m = d.data();
-                if(m.from === me.uid) uids.add(m.to);
-                if(m.to === me.uid) uids.add(m.from);
+                const cidParts = m.cid.split("_");
+                uids.add(cidParts[0] === me.uid ? cidParts[1] : cidParts[0]);
             });
             list.innerHTML = uids.size ? "" : "لا توجد محادثات.";
             for(let id of uids) {
                 const u = (await getDoc(doc(db, "users", id))).data();
                 if(u) {
                     list.innerHTML += `
-                        <div class="list-item" onclick="openChat('${u.uid}', '${u.name}', '${u.pfp}')">
+                        <div class="user-item" onclick="openChat('${u.uid}', '${u.name}')">
                             <img src="${u.pfp || "https://ui-avatars.com/api/?name="+u.name}" class="avatar">
-                            <div><b>${u.name}</b><br><small>عرض المحادثة</small></div>
+                            <div><b>${u.name}</b><br><small>محادثة نشطة</small></div>
                         </div>
                     `;
                 }
             }
         }
+
+        window.logout = () => signOut(auth).then(() => location.reload());
     </script>
 </body>
 </html>
