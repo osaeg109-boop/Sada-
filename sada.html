@@ -3,159 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>صدى | المنصة الشاملة</title>
+    <title>صدى | الإصدار الاحترافي</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #6c5ce7;
             --accent: #00cec9;
-            --bg: #f0f2f5;
+            --bg: #f8f9fa;
+            --card: #ffffff;
             --text: #2d3436;
+            --light: #636e72;
             --danger: #ff7675;
         }
 
         * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: var(--text); padding-bottom: 80px; }
 
-        /* Auth */
+        /* الشاشات الرئيسية */
         #auth-screen { position: fixed; inset: 0; z-index: 9999; background: var(--primary); display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 25px; text-align: center; }
-        .inp { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #eee; border-radius: 12px; outline: none; }
-        .btn-main { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--primary); color: white; font-weight: bold; cursor: pointer; }
+        .inp { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #eee; border-radius: 12px; outline: none; transition: 0.3s; }
+        .inp:focus { border-color: var(--primary); }
+        .btn { padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-main { background: var(--primary); color: white; width: 100%; }
+        .btn-main:active { transform: scale(0.98); }
 
-        /* Navigation */
+        /* الهيدر والتنقل */
+        header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         nav { position: fixed; bottom: 0; width: 100%; background: white; height: 70px; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; cursor: pointer; font-size: 11px; font-weight: bold; text-decoration: none; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 11px; cursor: pointer; }
         .nav-item.active { color: var(--primary); }
 
-        /* Views */
-        .view { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
+        /* المحتوى */
+        .view { display: none; padding: 15px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.3s; }
         .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Stories */
+        /* القصص والمنشورات */
         .stories-row { display: flex; gap: 12px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
-        .story-item { flex: 0 0 70px; text-align: center; cursor: pointer; }
-        .story-circle { width: 65px; height: 65px; border-radius: 50%; border: 3px solid var(--primary); padding: 2px; }
-        .story-circle img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-        .story-add { border: 2px dashed #ccc; font-size: 24px; display: flex; align-items: center; justify-content: center; color: #999; }
+        .story { flex: 0 0 70px; text-align: center; cursor: pointer; }
+        .story-ring { width: 65px; height: 65px; border-radius: 50%; border: 3px solid var(--primary); padding: 2px; }
+        .story-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        
+        .post { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); position: relative; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; cursor: pointer; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #eee; }
+        .post-img { width: 100%; border-radius: 15px; margin: 10px 0; }
+        .post-actions { display: flex; gap: 15px; margin-top: 10px; border-top: 1px solid #f9f9f9; padding-top: 10px; }
+        .action-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; color: var(--light); font-size: 14px; }
+        .delete-btn { position: absolute; top: 15px; left: 15px; color: var(--danger); font-size: 12px; cursor: pointer; }
 
-        /* Posts & UI Elements */
-        .card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; background: #eee; object-fit: cover; }
-        .media-box { width: 100%; border-radius: 15px; margin-top: 10px; }
+        /* الملف الشخصي */
+        .profile-header { text-align: center; padding: 20px; background: white; border-radius: 25px; margin-bottom: 20px; }
+        .stats { display: flex; justify-content: center; gap: 30px; margin: 15px 0; }
+        .stat-box { text-align: center; }
+        .stat-num { display: block; font-weight: 900; font-size: 18px; }
+        .stat-label { font-size: 12px; color: var(--light); }
 
-        /* Chat Window */
-        #chat-window { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; }
+        /* شاشة المحادثة */
+        #chat-ui { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; }
         #chat-msgs { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .msg-bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; font-size: 14px; position: relative; }
-        .msg-bubble.me { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg-bubble.them { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
-
-        /* Search List */
-        .search-list { max-height: 300px; overflow-y: auto; background: white; border-radius: 15px; margin-bottom: 15px; }
-        .user-item { display: flex; align-items: center; gap: 15px; padding: 10px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+        .bubble { max-width: 75%; padding: 10px 15px; border-radius: 18px; font-size: 14px; }
+        .bubble.me { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .bubble.them { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
 
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- Auth -->
+    <!-- شاشة الدخول -->
     <div id="auth-screen">
         <div class="auth-card">
-            <h1 style="color:var(--primary); margin:0;">صدى</h1>
-            <p style="color:#777; margin-bottom:20px;">تواصل بخصوصية تامة</p>
-            <div id="reg-box">
-                <input type="text" id="join-name" class="inp" placeholder="الاسم الكامل">
-                <input type="text" id="join-user" class="inp" placeholder="اسم المستخدم (إنجليزي)">
+            <h1 style="color:var(--primary); margin:0 0 20px;">صدى</h1>
+            <div id="reg-fields">
+                <input type="text" id="auth-name" class="inp" placeholder="الاسم الكامل">
+                <input type="text" id="auth-user" class="inp" placeholder="اسم المستخدم (إنجليزي)">
             </div>
-            <input type="email" id="join-email" class="inp" placeholder="البريد الإلكتروني">
-            <input type="password" id="join-pass" class="inp" placeholder="كلمة المرور">
-            <button class="btn-main" onclick="handleAuth()">استمرار</button>
-            <p onclick="toggleAuth()" style="cursor:pointer; color:var(--primary); font-size:14px; margin-top:15px;">لديك حساب؟ سجل دخولك</p>
+            <input type="email" id="auth-email" class="inp" placeholder="البريد الإلكتروني">
+            <input type="password" id="auth-pass" class="inp" placeholder="كلمة المرور">
+            <button class="btn btn-main" onclick="processAuth()">استمرار</button>
+            <p onclick="toggleAuthMode()" id="auth-toggle" style="margin-top:15px; font-size:13px; color:var(--primary); cursor:pointer;">لديك حساب؟ سجل دخولك</p>
         </div>
     </div>
 
-    <!-- App UI -->
-    <header style="background:white; padding:15px; position:sticky; top:0; z-index:1000; display:flex; justify-content:space-between; align-items:center;">
-        <div style="font-size:24px; font-weight:900; color:var(--primary);">صدى</div>
-        <div onclick="navTo('chat')" style="cursor:pointer; font-size:20px;">✉️</div>
+    <!-- الهيدر -->
+    <header id="app-header" class="hidden">
+        <div style="font-size:22px; font-weight:900; color:var(--primary);">صدى</div>
+        <div style="display:flex; gap:15px;">
+            <span onclick="navTo('chat')" style="cursor:pointer;">✉️</span>
+        </div>
     </header>
 
-    <main>
-        <!-- Home View -->
+    <main id="app-content" class="hidden">
+        
+        <!-- الرئيسية -->
         <div id="home-view" class="view active">
-            <div class="stories-row" id="stories-cont">
-                <div class="story-item" onclick="document.getElementById('story-file').click()">
-                    <div class="story-circle story-add">+</div>
-                    <span style="font-size:10px;">أضف قصة</span>
-                    <input type="file" id="story-file" hidden accept="image/*" onchange="uploadMedia(this, 'stories')">
+            <div class="stories-row" id="stories-list">
+                <div class="story" onclick="document.getElementById('story-inp').click()">
+                    <div class="story-ring" style="border-style:dashed; display:flex; align-items:center; justify-content:center; color:#ccc; font-size:30px;">+</div>
+                    <input type="file" id="story-inp" hidden accept="image/*" onchange="uploadMedia(this, 'stories')">
                 </div>
             </div>
             <div id="feed"></div>
         </div>
 
-        <!-- Post View -->
+        <!-- البحث -->
+        <div id="search-view" class="view">
+            <input type="text" class="inp" placeholder="🔍 ابحث عن أصدقاء..." oninput="globalSearch(this.value)">
+            <div id="search-results" style="margin-top:15px;"></div>
+        </div>
+
+        <!-- النشر -->
         <div id="post-view" class="view">
-            <div class="card">
-                <h3>نشر جديد</h3>
-                <textarea id="post-text" class="inp" style="height:120px; resize:none;" placeholder="ماذا يدور في ذهنك؟"></textarea>
+            <div class="post">
+                <h3>منشور جديد</h3>
+                <textarea id="post-text" class="inp" style="height:100px; resize:none;" placeholder="ماذا يدور في ذهنك؟"></textarea>
                 <input type="file" id="post-file" class="inp" accept="image/*">
-                <button class="btn-main" onclick="submitPost()">نشر في صدى</button>
+                <button class="btn btn-main" onclick="createPost()">نشر الآن</button>
             </div>
         </div>
 
-        <!-- Chat/Search View -->
-        <div id="chat-view" class="view">
-            <input type="text" class="inp" placeholder="🔍 ابحث عن مستخدم بالاسم..." oninput="searchUsers(this.value)">
-            <div id="search-results" class="search-list hidden"></div>
-            
-            <h4 style="margin:20px 0 10px;">المحادثات</h4>
-            <div id="threads"></div>
-        </div>
-
-        <!-- Profile View -->
-        <div id="profile-view" class="view" style="text-align:center;">
-            <div class="card">
-                <img id="my-pfp" class="avatar" style="width:100px; height:100px; margin-bottom:15px;">
-                <h2 id="my-name">...</h2>
-                <p id="my-user" style="color:var(--accent);">@...</p>
-                <div style="margin:20px 0; border-top:1px solid #eee; padding-top:20px;">
-                    <button class="btn-main" style="background:#eee; color:#333; margin-bottom:10px;" onclick="document.getElementById('pfp-file').click()">تغيير الصورة الشخصية</button>
-                    <input type="file" id="pfp-file" hidden accept="image/*" onchange="updateProfilePic(this)">
-                    <button class="btn-main" style="background:var(--danger);" onclick="logout()">خروج</button>
+        <!-- الملف الشخصي (لي أو للآخرين) -->
+        <div id="profile-view" class="view">
+            <div class="profile-header">
+                <img id="prof-pfp" class="avatar" style="width:90px; height:90px; margin-bottom:10px; border:3px solid var(--primary);">
+                <h2 id="prof-name" style="margin:0;">...</h2>
+                <p id="prof-user" style="color:var(--light); font-size:14px;">@...</p>
+                <div class="stats">
+                    <div class="stat-box"><span class="stat-num" id="stat-posts">0</span><span class="stat-label">منشور</span></div>
+                    <div class="stat-box"><span class="stat-num" id="stat-followers">0</span><span class="stat-label">متابع</span></div>
+                </div>
+                <div id="prof-actions">
+                    <!-- تظهر الأزرار ديناميكياً (تعديل أو متابعة/مراسلة) -->
                 </div>
             </div>
+            <div id="prof-posts"></div>
         </div>
+
+        <!-- الرسائل -->
+        <div id="chat-view" class="view">
+            <h4>المحادثات الأخيرة</h4>
+            <div id="threads-list"></div>
+        </div>
+
     </main>
 
-    <!-- Chat Pop-up -->
-    <div id="chat-window">
+    <!-- واجهة المحادثة Pop-up -->
+    <div id="chat-ui">
         <div style="background:white; padding:15px; border-bottom:1px solid #eee; display:flex; align-items:center; gap:15px;">
             <button onclick="closeChat()" style="border:none; background:none; font-size:22px;">✕</button>
-            <b id="chat-title">المحادثة</b>
+            <b id="chat-target-name">...</b>
         </div>
         <div id="chat-msgs"></div>
         <div style="background:white; padding:15px; display:flex; gap:10px;">
-            <button onclick="document.getElementById('chat-img').click()" style="border:none; background:#eee; padding:10px; border-radius:12px;">📷</button>
+            <button onclick="document.getElementById('chat-img').click()" style="border:none; background:#eee; padding:10px; border-radius:10px;">📷</button>
             <input type="file" id="chat-img" hidden accept="image/*" onchange="uploadChatImg(this)">
-            <input type="text" id="chat-input" class="inp" style="margin:0;" placeholder="رسالتك...">
-            <button onclick="sendMsg()" style="background:var(--primary); color:white; border:none; width:60px; border-radius:12px;">➤</button>
+            <input type="text" id="chat-input" class="inp" style="margin:0;" placeholder="اكتب شيئاً...">
+            <button onclick="sendMsg()" style="background:var(--primary); color:white; border:none; padding:0 15px; border-radius:10px;">➤</button>
         </div>
     </div>
 
-    <!-- Nav -->
-    <nav>
-        <div class="nav-item active" onclick="navTo('home', this)"><i>🏠</i>الرئيسية</div>
-        <div class="nav-item" onclick="navTo('post', this)"><i>➕</i>نشر</div>
-        <div class="nav-item" onclick="navTo('chat', this)"><i>💬</i>الرسائل</div>
-        <div class="nav-item" onclick="navTo('profile', this)"><i>👤</i>حسابي</div>
+    <!-- النافبار السفلي -->
+    <nav id="app-nav" class="hidden">
+        <div class="nav-item active" onclick="navTo('home', this)"><i>🏠</i><span>الرئيسية</span></div>
+        <div class="nav-item" onclick="navTo('search', this)"><i>🔍</i><span>استكشاف</span></div>
+        <div class="nav-item" onclick="navTo('post', this)"><i>➕</i><span>نشر</span></div>
+        <div class="nav-item" onclick="viewProfile()"><i>👤</i><span>حسابي</span></div>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, getDoc, setDoc, getDocs, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, doc, getDoc, setDoc, getDocs, serverTimestamp, updateDoc, deleteDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAhg6oTG1EJ44ST1zkkeYvKpfLMD2JDV3M",
@@ -171,10 +191,10 @@
         const db = getFirestore(app);
 
         let me = null;
-        let isLogin = false;
-        let activeChatId = null;
+        let isLoginMode = false;
+        let activeChatUid = null;
 
-        // --- Utils ---
+        // --- أدوات الصور ---
         const toB64 = (file) => new Promise(res => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -194,25 +214,29 @@
             }
         });
 
-        // --- Auth ---
-        window.toggleAuth = () => {
-            isLogin = !isLogin;
-            document.getElementById('reg-box').classList.toggle('hidden', isLogin);
+        // --- المصادقة ---
+        window.toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('reg-fields').classList.toggle('hidden', isLoginMode);
+            document.getElementById('auth-toggle').innerText = isLoginMode ? "ليس لديك حساب؟ اشترك" : "لديك حساب؟ سجل دخولك";
         };
 
-        window.handleAuth = async () => {
-            const email = document.getElementById('join-email').value;
-            const pass = document.getElementById('join-pass').value;
+        window.processAuth = async () => {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
             try {
-                if(isLogin) {
+                if(isLoginMode) {
                     await signInWithEmailAndPassword(auth, email, pass);
                 } else {
-                    const name = document.getElementById('join-name').value;
-                    const user = document.getElementById('join-user').value.toLowerCase();
+                    const name = document.getElementById('auth-name').value;
+                    const user = document.getElementById('auth-user').value.toLowerCase();
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "users", res.user.uid), { name, username: user, uid: res.user.uid, pfp: "" });
+                    await setDoc(doc(db, "users", res.user.uid), { 
+                        name, username: user, uid: res.user.uid, pfp: "", 
+                        followers: [], following: [], isPublic: true 
+                    });
                 }
-            } catch(e) { alert(e.message); }
+            } catch(e) { alert("خطأ: " + e.message); }
         };
 
         onAuthStateChanged(auth, async u => {
@@ -220,48 +244,37 @@
                 const snap = await getDoc(doc(db, "users", u.uid));
                 me = snap.data();
                 document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('my-name').innerText = me.name;
-                document.getElementById('my-user').innerText = "@" + me.username;
-                document.getElementById('my-pfp').src = me.pfp || "https://ui-avatars.com/api/?name="+me.name;
-                initApp();
+                document.getElementById('app-header').classList.remove('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
+                document.getElementById('app-nav').classList.remove('hidden');
+                initMain();
             } else {
                 document.getElementById('auth-screen').classList.remove('hidden');
             }
         });
 
-        // --- Core ---
-        function initApp() {
-            // Feed
+        // --- التهيئة الرئيسية ---
+        function initMain() {
+            // جلب المنشورات العامة
             onSnapshot(collection(db, "posts"), snap => {
                 const feed = document.getElementById('feed');
                 feed.innerHTML = "";
-                let ps = [];
-                snap.forEach(d => ps.push(d.data()));
-                ps.sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
-                ps.forEach(p => {
-                    feed.innerHTML += `
-                        <div class="card">
-                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-                                <img src="${p.pfp || "https://ui-avatars.com/api/?name="+p.author}" class="avatar">
-                                <b>${p.author}</b>
-                            </div>
-                            <div>${p.text}</div>
-                            ${p.media ? `<img src="${p.media}" class="media-box">` : ''}
-                        </div>
-                    `;
-                });
+                let arr = [];
+                snap.forEach(d => arr.push({id: d.id, ...d.data()}));
+                arr.sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+                arr.forEach(p => feed.innerHTML += renderPost(p));
             });
 
-            // Stories
+            // جلب القصص
             onSnapshot(collection(db, "stories"), snap => {
-                const cont = document.getElementById('stories-cont');
-                const addBtn = cont.children[0].outerHTML;
-                cont.innerHTML = addBtn;
+                const list = document.getElementById('stories-list');
+                const add = list.children[0].outerHTML;
+                list.innerHTML = add;
                 snap.forEach(d => {
                     const s = d.data();
-                    cont.innerHTML += `
-                        <div class="story-item">
-                            <div class="story-circle"><img src="${s.media}"></div>
+                    list.innerHTML += `
+                        <div class="story" onclick="viewStory('${s.media}')">
+                            <div class="story-ring"><img src="${s.media}"></div>
                             <span style="font-size:10px;">${s.author}</span>
                         </div>
                     `;
@@ -269,47 +282,69 @@
             });
         }
 
-        window.submitPost = async () => {
+        function renderPost(p) {
+            const isMe = p.uid === me.uid;
+            const liked = p.likes?.includes(me.uid);
+            return `
+                <div class="post">
+                    ${isMe ? `<span class="delete-btn" onclick="deleteObj('posts', '${p.id}')">حذف 🗑️</span>` : ''}
+                    <div class="post-header" onclick="viewProfile('${p.uid}')">
+                        <img src="${p.pfp || "https://ui-avatars.com/api/?name="+p.author}" class="avatar">
+                        <div><b>${p.author}</b><br><small style="color:#999">@${p.username}</small></div>
+                    </div>
+                    <div>${p.text}</div>
+                    ${p.media ? `<img src="${p.media}" class="post-img">` : ''}
+                    <div class="post-actions">
+                        <button class="action-btn" onclick="likePost('${p.id}', ${liked})">
+                            ${liked ? '❤️' : '🤍'} ${p.likes?.length || 0}
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- الوظائف التفاعلية ---
+        window.navTo = (id, el) => {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id + '-view').classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+            if(id === 'chat') renderThreads();
+        };
+
+        window.createPost = async () => {
             const txt = document.getElementById('post-text').value;
             const file = document.getElementById('post-file').files[0];
-            let media = file ? await toB64(file) : "";
+            if(!txt && !file) return;
+            const b64 = file ? await toB64(file) : "";
             await addDoc(collection(db, "posts"), {
-                text: txt, media, author: me.name, pfp: me.pfp, uid: me.uid, at: serverTimestamp()
+                text: txt, media: b64, author: me.name, username: me.username, pfp: me.pfp, uid: me.uid, at: serverTimestamp(), likes: []
             });
             document.getElementById('post-text').value = "";
-            navTo('home', document.querySelectorAll('.nav-item')[0]);
+            navTo('home', document.querySelector('.nav-item'));
         };
 
-        window.uploadMedia = async (input, type) => {
-            if(!input.files[0]) return;
-            const b64 = await toB64(input.files[0]);
-            await addDoc(collection(db, type), {
-                media: b64, author: me.name, uid: me.uid, at: serverTimestamp()
-            });
-            alert("تم الرفع بنجاح!");
+        window.likePost = async (id, liked) => {
+            const ref = doc(db, "posts", id);
+            await updateDoc(ref, { likes: liked ? arrayRemove(me.uid) : arrayUnion(me.uid) });
         };
 
-        window.updateProfilePic = async (input) => {
-            if(!input.files[0]) return;
-            const b64 = await toB64(input.files[0]);
-            await updateDoc(doc(db, "users", me.uid), { pfp: b64 });
-            me.pfp = b64;
-            document.getElementById('my-pfp').src = b64;
+        window.deleteObj = async (coll, id) => {
+            if(confirm("هل أنت متأكد من الحذف؟")) await deleteDoc(doc(db, coll, id));
         };
 
-        // --- Search & Messaging ---
-        window.searchUsers = async (val) => {
-            const resDiv = document.getElementById('search-results');
-            if(val.length < 2) { resDiv.classList.add('hidden'); return; }
+        // --- البحث والملفات الشخصية ---
+        window.globalSearch = async (val) => {
+            const res = document.getElementById('search-results');
+            if(val.length < 2) { res.innerHTML = ""; return; }
             const q = query(collection(db, "users"));
             const snap = await getDocs(q);
-            resDiv.innerHTML = "";
-            resDiv.classList.remove('hidden');
+            res.innerHTML = "";
             snap.forEach(d => {
                 const u = d.data();
-                if(u.uid !== me.uid && u.name.toLowerCase().includes(val.toLowerCase())) {
-                    resDiv.innerHTML += `
-                        <div class="user-item" onclick="openChat('${u.uid}', '${u.name}')">
+                if(u.name.toLowerCase().includes(val.toLowerCase()) || u.username.includes(val)) {
+                    res.innerHTML += `
+                        <div class="post" onclick="viewProfile('${u.uid}')" style="cursor:pointer; display:flex; align-items:center; gap:15px; margin-bottom:8px; padding:10px;">
                             <img src="${u.pfp || "https://ui-avatars.com/api/?name="+u.name}" class="avatar">
                             <div><b>${u.name}</b><br><small>@${u.username}</small></div>
                         </div>
@@ -318,10 +353,60 @@
             });
         };
 
+        window.viewProfile = async (uid = me.uid) => {
+            navTo('profile');
+            const uDoc = await getDoc(doc(db, "users", uid));
+            const u = uDoc.data();
+            
+            document.getElementById('prof-pfp').src = u.pfp || "https://ui-avatars.com/api/?name="+u.name;
+            document.getElementById('prof-name').innerText = u.name;
+            document.getElementById('prof-user').innerText = "@" + u.username;
+            document.getElementById('stat-followers').innerText = u.followers?.length || 0;
+            
+            const actions = document.getElementById('prof-actions');
+            actions.innerHTML = "";
+            if(uid === me.uid) {
+                actions.innerHTML = `<button class="btn btn-main" style="background:#eee; color:#333;" onclick="editProfile()">تعديل حسابي ⚙️</button>
+                                     <button class="btn btn-main" style="background:var(--danger); margin-top:8px;" onclick="signOut(auth).then(()=>location.reload())">خروج</button>`;
+            } else {
+                const following = me.following?.includes(uid);
+                actions.innerHTML = `
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn btn-main" onclick="toggleFollow('${uid}', ${following})">${following ? 'إلغاء المتابعة' : 'متابعة'}</button>
+                        <button class="btn btn-main" style="background:var(--accent);" onclick="openChat('${uid}', '${u.name}')">مراسلة</button>
+                    </div>
+                `;
+            }
+
+            // جلب منشورات هذا الشخص فقط
+            const qP = query(collection(db, "posts"), where("uid", "==", uid));
+            const pSnap = await getDocs(qP);
+            const pList = document.getElementById('prof-posts');
+            pList.innerHTML = "";
+            document.getElementById('stat-posts').innerText = pSnap.size;
+            pSnap.forEach(d => pList.innerHTML += renderPost({id: d.id, ...d.data()}));
+        };
+
+        window.toggleFollow = async (uid, following) => {
+            await updateDoc(doc(db, "users", me.uid), { following: following ? arrayRemove(uid) : arrayUnion(uid) });
+            await updateDoc(doc(db, "users", uid), { followers: following ? arrayRemove(me.uid) : arrayUnion(me.uid) });
+            const snap = await getDoc(doc(db, "users", me.uid)); me = snap.data(); // تحديث بياناتي
+            viewProfile(uid);
+        };
+
+        window.editProfile = async () => {
+            const newName = prompt("تعديل الاسم:", me.name);
+            if(newName) {
+                await updateDoc(doc(db, "users", me.uid), { name: newName });
+                location.reload();
+            }
+        };
+
+        // --- الرسائل النشطة ---
         window.openChat = (uid, name) => {
-            activeChatId = uid;
-            document.getElementById('chat-title').innerText = name;
-            document.getElementById('chat-window').style.display = 'flex';
+            activeChatUid = uid;
+            document.getElementById('chat-target-name').innerText = name;
+            document.getElementById('chat-ui').style.display = 'flex';
             const cid = [me.uid, uid].sort().join("_");
             onSnapshot(query(collection(db, "messages"), where("cid", "==", cid)), snap => {
                 const box = document.getElementById('chat-msgs');
@@ -331,11 +416,10 @@
                 msgs.sort((a,b) => (a.at?.seconds || 0) - (b.at?.seconds || 0));
                 msgs.forEach(m => {
                     box.innerHTML += `
-                        <div class="msg-bubble ${m.from === me.uid ? 'me' : 'them'}">
+                        <div class="bubble ${m.from === me.uid ? 'me' : 'them'}">
                             ${m.text ? `<div>${m.text}</div>` : ''}
-                            ${m.media ? `<img src="${m.media}" class="media-box">` : ''}
-                        </div>
-                    `;
+                            ${m.media ? `<img src="${m.media}" style="width:100%; border-radius:10px; margin-top:5px;">` : ''}
+                        </div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
@@ -344,59 +428,56 @@
         window.sendMsg = async () => {
             const inp = document.getElementById('chat-input');
             if(!inp.value) return;
-            const cid = [me.uid, activeChatId].sort().join("_");
-            await addDoc(collection(db, "messages"), {
-                cid, text: inp.value, from: me.uid, at: serverTimestamp()
-            });
+            const cid = [me.uid, activeChatUid].sort().join("_");
+            await addDoc(collection(db, "messages"), { cid, text: inp.value, from: me.uid, at: serverTimestamp() });
             inp.value = "";
         };
 
         window.uploadChatImg = async (input) => {
             if(!input.files[0]) return;
             const b64 = await toB64(input.files[0]);
-            const cid = [me.uid, activeChatId].sort().join("_");
-            await addDoc(collection(db, "messages"), {
-                cid, media: b64, from: me.uid, at: serverTimestamp()
-            });
+            const cid = [me.uid, activeChatUid].sort().join("_");
+            await addDoc(collection(db, "messages"), { cid, media: b64, from: me.uid, at: serverTimestamp() });
         };
 
-        window.closeChat = () => document.getElementById('chat-window').style.display = 'none';
-
-        window.navTo = (id, el) => {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id + '-view').classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-            if(id === 'chat') renderThreads();
-        };
+        window.closeChat = () => document.getElementById('chat-ui').style.display = 'none';
 
         async function renderThreads() {
-            const list = document.getElementById('threads');
+            const list = document.getElementById('threads-list');
             list.innerHTML = "جاري التحميل...";
             const snap = await getDocs(collection(db, "messages"));
             const uids = new Set();
             snap.forEach(d => {
                 const m = d.data();
-                const cidParts = m.cid.split("_");
-                uids.add(cidParts[0] === me.uid ? cidParts[1] : cidParts[0]);
+                if(m.cid.includes(me.uid)) {
+                    const other = m.cid.split("_").find(id => id !== me.uid);
+                    if(other) uids.add(other);
+                }
             });
             list.innerHTML = uids.size ? "" : "لا توجد محادثات.";
             for(let id of uids) {
                 const u = (await getDoc(doc(db, "users", id))).data();
                 if(u) {
                     list.innerHTML += `
-                        <div class="user-item" onclick="openChat('${u.uid}', '${u.name}')">
+                        <div class="post" onclick="openChat('${u.uid}', '${u.name}')" style="cursor:pointer; display:flex; gap:15px; padding:10px;">
                             <img src="${u.pfp || "https://ui-avatars.com/api/?name="+u.name}" class="avatar">
-                            <div><b>${u.name}</b><br><small>محادثة نشطة</small></div>
-                        </div>
-                    `;
+                            <div><b>${u.name}</b><br><small>مراسلة فورية</small></div>
+                        </div>`;
                 }
             }
         }
 
-        window.logout = () => signOut(auth).then(() => location.reload());
+        window.uploadMedia = async (input, type) => {
+            if(!input.files[0]) return;
+            const b64 = await toB64(input.files[0]);
+            await addDoc(collection(db, type), { media: b64, author: me.name, uid: me.uid, at: serverTimestamp() });
+            alert("تم الرفع!");
+        };
+
+        window.viewStory = (src) => {
+            const win = window.open("");
+            win.document.write(`<img src="${src}" style="width:100%; height:100vh; object-fit:contain; background:black;">`);
+        };
     </script>
 </body>
 </html>
