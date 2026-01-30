@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق صدى | Sada</title>
+    <!-- استدعاء خط تجوال العربي -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #009688; /* لون الهوية (تركواز) */
+            --primary-dark: #00796b;
+            --bg: #f0f2f5;
+            --white: #ffffff;
+            --text: #1c1e21;
+            --gray: #65676b;
+            --nav-height: 60px;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: 'Tajawal', sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
+        
+        /* --- الشاشات (Views) --- */
+        .view { display: none; padding: 15px; max-width: 600px; margin: 0 auto; }
+        .view.active { display: block; animation: fadeIn 0.3s; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- الهيدر العلوي --- */
+        header { background: var(--white); padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-weight: 800; font-size: 24px; color: var(--primary); letter-spacing: -1px; }
+
+        /* --- القائمة السفلية --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); height: var(--nav-height); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #ddd; z-index: 1000; }
+        .nav-item { font-size: 24px; color: var(--gray); cursor: pointer; padding: 10px; transition: 0.2s; }
+        .nav-item.active { color: var(--primary); transform: scale(1.1); }
+        .nav-item.add-btn { background: var(--primary); color: white; border-radius: 50%; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,150,136,0.4); }
+
+        /* --- بطاقة المنشور --- */
+        .post-card { background: var(--white); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .user-info { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; }
+        .avatar { width: 40px; height: 40px; background: #eee; border-radius: 50%; margin-left: 10px; display: flex; justify-content: center; align-items: center; font-weight: bold; color: var(--primary); border: 2px solid var(--primary); }
+        .user-name { font-weight: 700; font-size: 15px; }
+        .post-time { font-size: 12px; color: var(--gray); display: block; }
+        .post-text { font-size: 16px; line-height: 1.5; margin-bottom: 10px; white-space: pre-wrap; }
+        .post-actions { border-top: 1px solid #f0f0f0; padding-top: 10px; display: flex; gap: 20px; }
+        .action-btn { background: none; border: none; color: var(--gray); cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 5px; }
+        .action-btn:hover { color: var(--primary); }
+
+        /* --- صفحة الدخول --- */
+        #auth-view { text-align: center; padding: 40px 20px; height: 100vh; display: flex; flex-direction: column; justify-content: center; background: white; position: fixed; top: 0; width: 100%; z-index: 2000; }
+        input, textarea { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 16px; background: #fafafa; }
+        .btn-primary { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-secondary { background: transparent; color: var(--primary); border: none; margin-top: 10px; cursor: pointer; }
+
+        /* --- الملف الشخصي --- */
+        .profile-header { background: white; padding: 20px; border-radius: 0 0 20px 20px; text-align: center; margin-bottom: 20px; }
+        .profile-avatar { width: 80px; height: 80px; background: #eee; border-radius: 50%; margin: 0 auto 10px; font-size: 30px; display: flex; justify-content: center; align-items: center; color: var(--primary); border: 3px solid var(--primary); }
+        .stats { display: flex; justify-content: center; gap: 30px; margin: 15px 0; }
+        .stat-box { text-align: center; }
+        .stat-num { font-weight: bold; font-size: 18px; display: block; }
+        .stat-label { font-size: 12px; color: var(--gray); }
+        .settings-card { background: white; border-radius: 12px; padding: 15px; margin-top: 10px; }
+        .switch-container { display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- الرسائل --- */
+        .msg-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 8px; border-right: 4px solid var(--primary); }
+        
+        /* عناصر مساعدة */
+        .hidden { display: none !important; }
+        .alert { padding: 10px; background: #ffebee; color: #c62828; border-radius: 5px; margin-bottom: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- === شاشة تسجيل الدخول === -->
+    <div id="auth-view">
+        <h1 class="logo" style="font-size: 40px; margin-bottom: 10px;">صدى</h1>
+        <p style="color: var(--gray);">شارك لحظاتك مع العالم</p>
+        <div id="auth-error" class="alert"></div>
+        <input type="email" id="email" placeholder="البريد الإلكتروني">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button class="btn-primary" onclick="handleAuth()">دخول</button>
+        <button class="btn-secondary" onclick="toggleAuthMode()" id="toggle-auth-text">ليس لديك حساب؟ إنشاء حساب جديد</button>
+    </div>
+
+    <!-- === التطبيق الرئيسي === -->
+    <div id="main-app" class="hidden">
+        
+        <!-- الهيدر -->
+        <header>
+            <div class="logo">صدى</div>
+            <div id="header-title" style="font-size: 14px; color: var(--gray);">الرئيسية</div>
+        </header>
+
+        <!-- 1. الرئيسية (Feed) -->
+        <div id="home-view" class="view active">
+            <div id="posts-container">
+                <!-- المنشورات تظهر هنا -->
+                <p style="text-align: center; color: #999; margin-top: 50px;">جاري تحميل المنشورات...</p>
+            </div>
+        </div>
+
+        <!-- 2. إضافة منشور -->
+        <div id="add-view" class="view">
+            <h3 style="margin-top: 0;">منشور جديد</h3>
+            <textarea id="new-post-text" rows="5" placeholder="اكتب شيئاً مميزاً..."></textarea>
+            <button class="btn-primary" onclick="publishPost()">نشر الآن</button>
+        </div>
+
+        <!-- 3. الرسائل -->
+        <div id="messages-view" class="view">
+            <h3>الرسائل الواردة</h3>
+            <div id="inbox-container">
+                <p style="text-align: center; color: #999;">لا توجد رسائل جديدة</p>
+            </div>
+        </div>
+
+        <!-- 4. حسابي -->
+        <div id="profile-view" class="view">
+            <div class="profile-header">
+                <div class="profile-avatar" id="my-avatar">?</div>
+                <h2 id="my-name">مستخدم</h2>
+                <p id="my-email" style="color: var(--gray); font-size: 14px;">email@example.com</p>
+                
+                <div class="stats">
+                    <div class="stat-box"><span class="stat-num" id="posts-count">0</span><span class="stat-label">منشورات</span></div>
+                    <div class="stat-box"><span class="stat-num">0</span><span class="stat-label">متابعين</span></div>
+                    <div class="stat-box"><span class="stat-num">0</span><span class="stat-label">يتابع</span></div>
+                </div>
+            </div>
+
+            <div class="settings-card">
+                <h3>الإعدادات</h3>
+                <div class="switch-container">
+                    <span>حساب خاص (Private)</span>
+                    <input type="checkbox" id="privacy-toggle" onchange="updatePrivacy()">
+                </div>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+                <button class="btn-secondary" style="color: red; width: 100%;" onclick="logout()">تسجيل الخروج</button>
+            </div>
+        </div>
+
+        <!-- 5. عرض بروفايل مستخدم آخر -->
+        <div id="user-profile-view" class="view">
+            <button onclick="nav('home')" style="border: none; background: none; font-size: 20px;">➡️ عودة</button>
+            <div class="profile-header">
+                <div class="profile-avatar" id="other-avatar">?</div>
+                <h2 id="other-name">User</h2>
+                <button id="msg-btn" class="btn-primary" style="margin-top: 10px; width: auto; padding: 8px 20px;">✉️ مراسلة</button>
+            </div>
+            <!-- منطقة إرسال رسالة -->
+            <div id="message-box-area" class="settings-card hidden">
+                <textarea id="msg-text" rows="2" placeholder="اكتب رسالتك..."></textarea>
+                <button class="btn-primary" onclick="sendMessage()">إرسال</button>
+            </div>
+        </div>
+
+        <!-- القائمة السفلية -->
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="nav('home')">🏠</div> <!-- الرئيسية -->
+            <div class="nav-item" onclick="nav('messages')">💬</div> <!-- الرسائل -->
+            <div class="nav-item add-btn" onclick="nav('add')">➕</div> <!-- إضافة -->
+            <div class="nav-item" onclick="nav('profile')">👤</div> <!-- حسابي -->
+        </nav>
+
+    </div>
+
+    <!-- === كود الجافاسكريبت === -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, getDoc, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // إعدادات Firebase الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyAhg6oTG1EJ44ST1zkkeYvKpfLMD2JDV3M",
+            authDomain: "fir-c3e88.firebaseapp.com",
+            projectId: "fir-c3e88",
+            storageBucket: "fir-c3e88.firebasestorage.app",
+            messagingSenderId: "202130175288",
+            appId: "1:202130175288:web:0d7ad99c3c828501b4fdcd",
+            measurementId: "G-J47JVNC93Q"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentTargetUser = null; // المستخدم الذي نتصفح بروفايله
+        let isLoginMode = true;
+
+        // --- إدارة التنقل (Navigation) ---
+        window.nav = (viewName) => {
+            // إخفاء كل الواجهات
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            // إظهار الواجهة المطلوبة
+            if(viewName === 'user-profile') {
+                document.getElementById('user-profile-view').classList.add('active');
+            } else {
+                document.getElementById(viewName + '-view').classList.add('active');
+            }
+
+            // تحديث حالة الأيقونات في الأسفل
+            if (viewName === 'home') document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+            if (viewName === 'messages') document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+            if (viewName === 'profile') document.querySelector('.nav-item:nth-child(4)').classList.add('active');
+        }
+
+        // --- المصادقة (Auth) ---
+        window.toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            document.querySelector('.logo').innerText = isLoginMode ? "صدى" : "انضم لصدى";
+            document.querySelector('.btn-primary').innerText = isLoginMode ? "دخول" : "إنشاء حساب";
+            document.getElementById('toggle-auth-text').innerText = isLoginMode ? "ليس لديك حساب؟ إنشاء حساب جديد" : "لديك حساب؟ تسجيل الدخول";
+        }
+
+        window.handleAuth = async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorBox = document.getElementById('auth-error');
+
+            try {
+                if (isLoginMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                    // إنشاء ملف للمستخدم في قاعدة البيانات عند التسجيل
+                    await setDoc(doc(db, "users", cred.user.uid), {
+                        email: email,
+                        name: email.split('@')[0],
+                        isPrivate: false,
+                        joinedAt: serverTimestamp()
+                    });
+                }
+                document.getElementById('auth-view').style.display = 'none';
+                document.getElementById('main-app').classList.remove('hidden');
+            } catch (error) {
+                errorBox.style.display = 'block';
+                errorBox.innerText = "خطأ: " + error.message;
+            }
+        }
+
+        window.logout = () => {
+            signOut(auth);
+            location.reload();
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-view').style.display = 'none';
+                document.getElementById('main-app').classList.remove('hidden');
+                loadMyProfile();
+                loadPosts();
+                loadMessages();
+            } else {
+                document.getElementById('auth-view').style.display = 'flex';
+                document.getElementById('main-app').classList.add('hidden');
+            }
+        });
+
+        // --- الملف الشخصي والإعدادات ---
+        async function loadMyProfile() {
+            const docRef = doc(db, "users", currentUser.uid);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('my-name').innerText = data.name;
+                document.getElementById('my-email').innerText = data.email;
+                document.getElementById('my-avatar').innerText = data.name.charAt(0).toUpperCase();
+                document.getElementById('privacy-toggle').checked = data.isPrivate || false;
+            }
+        }
+
+        window.updatePrivacy = async () => {
+            const isPrivate = document.getElementById('privacy-toggle').checked;
+            await updateDoc(doc(db, "users", currentUser.uid), {
+                isPrivate: isPrivate
+            });
+            alert(isPrivate ? "حسابك الآن خاص 🔒" : "حسابك الآن عام 🌍");
+        }
+
+        // --- المنشورات (Posts) ---
+        window.publishPost = async () => {
+            const text = document.getElementById('new-post-text').value;
+            if (!text.trim()) return;
+
+            try {
+                // جلب اسم المستخدم الحالي
+                const userSnap = await getDoc(doc(db, "users", currentUser.uid));
+                const userName = userSnap.exists() ? userSnap.data().name : "مجهول";
+
+                await addDoc(collection(db, "posts"), {
+                    content: text,
+                    uid: currentUser.uid,
+                    author: userName,
+                    timestamp: serverTimestamp(),
+                    likes: 0
+                });
+                document.getElementById('new-post-text').value = "";
+                nav('home'); // العودة للرئيسية
+            } catch (e) {
+                alert("خطأ في النشر: " + e.message);
+            }
+        }
+
+        function loadPosts() {
+            const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('posts-container');
+                container.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const post = doc.data();
+                    const div = document.createElement('div');
+                    div.className = 'post-card';
+                    div.innerHTML = `
+                        <div class="user-info" onclick="openUserProfile('${post.uid}', '${post.author}')">
+                            <div class="avatar">${post.author.charAt(0).toUpperCase()}</div>
+                            <div style="margin-right: 10px;">
+                                <div class="user-name">${post.author}</div>
+                                <span class="post-time">${post.timestamp ? new Date(post.timestamp.seconds * 1000).toLocaleTimeString('ar-EG') : 'الآن'}</span>
+                            </div>
+                        </div>
+                        <div class="post-text">${post.content}</div>
+                        <div class="post-actions">
+                            <button class="action-btn">❤️ أعجبني</button>
+                            <button class="action-btn">💬 تعليق</button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        // --- التفاعل مع المستخدمين الآخرين والمراسلة ---
+        window.openUserProfile = async (uid, name) => {
+            if (uid === currentUser.uid) {
+                nav('profile');
+                return;
+            }
+            currentTargetUser = uid;
+            document.getElementById('other-name').innerText = name;
+            document.getElementById('other-avatar').innerText = name.charAt(0).toUpperCase();
+            
+            // التحقق من الخصوصية (محاكاة)
+            const userDoc = await getDoc(doc(db, "users", uid));
+            if (userDoc.exists() && userDoc.data().isPrivate) {
+                // هنا يمكن إضافة منطق المتابعة، لكن سنسمح بالمراسلة للتبسيط
+            }
+
+            // إعداد زر الرسائل
+            const msgArea = document.getElementById('message-box-area');
+            msgArea.classList.add('hidden');
+            document.getElementById('msg-btn').onclick = () => {
+                msgArea.classList.remove('hidden');
+            };
+
+            nav('user-profile');
+        }
+
+        window.sendMessage = async () => {
+            const text = document.getElementById('msg-text').value;
+            if(!text) return;
+
+            await addDoc(collection(db, "messages"), {
+                from: currentUser.uid,
+                to: currentTargetUser,
+                content: text,
+                fromName: document.getElementById('my-name').innerText,
+                timestamp: serverTimestamp()
+            });
+            
+            alert("تم إرسال الرسالة!");
+            document.getElementById('msg-text').value = "";
+            document.getElementById('message-box-area').classList.add('hidden');
+        }
+
+        function loadMessages() {
+            // جلب الرسائل المرسلة إلي
+            const q = query(collection(db, "messages"), where("to", "==", currentUser.uid), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snap) => {
+                const box = document.getElementById('inbox-container');
+                box.innerHTML = "";
+                if(snap.empty) box.innerHTML = '<p style="text-align: center;">لا توجد رسائل</p>';
+                
+                snap.forEach(doc => {
+                    const msg = doc.data();
+                    const div = document.createElement('div');
+                    div.className = 'msg-card';
+                    div.innerHTML = `
+                        <div style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">من: ${msg.fromName || 'مجهول'}</div>
+                        <div>${msg.content}</div>
+                        <div style="font-size: 11px; color: gray; margin-top: 5px;">${msg.timestamp ? new Date(msg.timestamp.seconds * 1000).toLocaleString('ar-EG') : ''}</div>
+                    `;
+                    box.appendChild(div);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
+
